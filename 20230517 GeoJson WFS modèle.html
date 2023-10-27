@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+<!-- Nous chargeons les fichiers CDN de Leaflet. Le CSS AVANT le JS pour la carte OSM -->
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"/> 
+   <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+<!--<pour utilisation sur plusieur support>-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+
+
+
+<style>
+   body {
+     margin: 0px;
+     padding: 0px;
+   }
+   #map {
+     position: absolute;
+     top: 0px;
+     right: 0px;
+     bottom: 0px;
+     left: 0px;
+     }
+</style>
+</head>
+
+
+<body>
+  <div id="map"></div>
+
+  <script>
+    let maCarte = L.map('map').setView([48,-1], 8);
+  var Plan = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {minZoom: 1, maxZoom: 19});
+  Plan.addTo(maCarte);
+
+
+
+
+    let geoJsonUrl = "https://geobretagne.fr/geoserver/ows?service=wfs&version=1.0.0&request=GetFeature&typeName=dreal_b:l_aires_attraction_villes_communes&format=text/javascript&outputFormat=application/json&srsname=EPSG:4326&format_option=callback:loadGeojson";
+
+let xhttp = new XMLHttpRequest ();
+xhttp.onreadystatechange = function() {
+   if (this.readyState == 4 && this.status == 200) {
+     afficheGeoJSON(xhttp.responseText);
+   }
+};
+xhttp.open("GET",geoJsonUrl);
+xhttp.send ();
+
+   function afficheGeoJSON(donnees) {
+    L.geoJSON(JSON.parse(donnees), {
+
+
+       style: function (feature) {
+          return {color : "green"};
+       },
+
+
+       onEachFeature: function (feature, layer){
+           layer.bindPopup(feature.properties.LIBAAV2)
+         } 
+
+       }).addTo(maCarte);
+
+
+   }
+
+
+  </script>
+
+</body>
+</html>
